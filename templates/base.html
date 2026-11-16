@@ -5,25 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block titulo %}{{ perfil.nombre }}{% endblock %}</title>
     <link
+      rel="icon"
+      type="image/svg+xml"
+      href="{{ url_for('static', filename='img/favicon.svg') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/estilos.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/extras.css') }}"
     />
   </head>
   <body>
     <header class="barra">
-      <span class="logo">&lt;/&gt; {{ perfil.nombre }}</span>
+      <a class="logo" href="{{ url_for('inicio') }}"
+        ><i class="fa-solid fa-code"></i> {{ perfil.nombre }}</a
+      >
       <nav class="menu">
         {% for r in redes %}
-        <a class="red" href="{{ r.url }}" target="_blank" rel="noopener"
-          >{{ r.nombre }}</a
+        <a
+          class="red"
+          href="{{ r.url }}"
+          target="_blank"
+          rel="noopener"
+          aria-label="{{ r.nombre }}"
         >
-        {% endfor %}
-        <a href="#login" class="boton">Login</a>
+          <i class="{{ r.icono }}"></i> <span>{{ r.nombre }}</span>
+        </a>
+        {% endfor %} {% if session.get('usuario_id') %}
+        <a href="{{ url_for('logout') }}" class="boton">Logout</a>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="boton">Login</a>
+        {% endif %}
       </nav>
     </header>
 
     {% block banner %}{% endblock %}
 
     <main class="contenedor">{% block contenido %}{% endblock %}</main>
+
+    <footer class="pie">
+      <div class="pie-contenido">
+        <div class="pie-texto">
+          <h2 class="titulo-seccion">Contacto</h2>
+          {% if perfil.email %}
+          <p><i class="fa-solid fa-envelope"></i> {{ perfil.email }}</p>
+          {% endif %} {% if perfil.ubicacion %}
+          <p><i class="fa-solid fa-location-dot"></i> {{ perfil.ubicacion }}</p>
+          {% endif %}
+        </div>
+        {% if perfil.ubicacion %}
+        <iframe
+          class="mapa"
+          title="Mapa de {{ perfil.ubicacion }}"
+          src="https://www.google.com/maps?q={{ perfil.ubicacion | urlencode }}&output=embed"
+          loading="lazy"
+        ></iframe>
+        {% endif %}
+      </div>
+    </footer>
   </body>
 </html>

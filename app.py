@@ -1,12 +1,28 @@
-from flask import Flask, render_template
+from functools import wraps
+
+from flask import Flask, render_template, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import check_password_hash
+
 import config
+from forms import LoginForm
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = config.URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SECRET_KEY"] = config.SECRET_KEY
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 db = SQLAlchemy(app)
+
+
+class Usuario(db.Model):
+    __tablename__ = "usuario"
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    password_hash = db.Column(db.String(255), nullable=False)
 
 
 class Perfil(db.Model):
@@ -67,6 +83,18 @@ class Proyecto(db.Model):
     orden = db.Column(db.Integer, default=0)
 
 
+def login_requerido(vista):
+    """Decorador: protege una ruta. Sin sesión iniciada, manda al login."""
+
+    @wraps(vista)
+    def envoltura(*args, **kwargs):
+        if "usuario_id" not in session:
+            return redirect(url_for("login"))
+        return vista(*args, **kwargs)
+
+    return envoltura
+
+
 @app.route("/")
 def inicio():
     perfil = Perfil.query.first()
@@ -90,6 +118,31 @@ def inicio():
         habilidades=habilidades,
         proyectos=proyectos,
     )
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    perfil = Perfil.query.first()
+    redes = RedSocial.query.filter_by(perfil_id=perfil.id).all()
+    form = LoginForm()
+
+    # validate_on_submit: es POST, los campos son válidos y el token CSRF coincide
+    if form.validate_on_submit():
+        usuario = Usuario.query.filter_by(username=form.username.data).first()
+        if usuario and check_password_hash(usuario.password_hash, form.password.data):
+            session.clear()
+            session["usuario_id"] = usuario.id
+            return redirect(url_for("inicio"))
+        # Mensaje genérico: no revela si falló el usuario o la contraseña
+        flash("Usuario o contraseña incorrectos.")
+
+    return render_template("login.html", perfil=perfil, redes=redes, form=form)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("inicio"))
 
 
 if __name__ == "__main__":

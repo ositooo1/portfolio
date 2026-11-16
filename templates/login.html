@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block titulo %}Login{% endblock %} {% block
+contenido %}
+<section class="login-caja">
+  <h2 class="titulo-seccion">Iniciar sesión</h2>
+
+  {% with mensajes = get_flashed_messages() %} {% for m in mensajes %}
+  <p class="alerta">{{ m }}</p>
+  {% endfor %} {% endwith %}
+
+  <form method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="campo">
+      {{ form.username.label }} {{ form.username(autocomplete="username") }} {%
+      for e in form.username.errors %}<span class="error">{{ e }}</span>{%
+      endfor %}
+    </div>
+
+    <div class="campo">
+      {{ form.password.label }} {{
+      form.password(autocomplete="current-password") }} {% for e in
+      form.password.errors %}<span class="error">{{ e }}</span>{% endfor %}
+    </div>
+
+    {{ form.enviar(class="boton boton-bloque") }}
+  </form>
+</section>
+{% endblock %}
