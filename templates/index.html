@@ -1,0 +1,96 @@
+{% extends "base.html" %} {% block banner %}
+<section
+  class="banner"
+  {%
+  if
+  perfil.banner
+  %}style="background-image: linear-gradient(rgba(10,10,10,0.55), #0a0a0a), url('{{ url_for('static', filename='img/' ~ perfil.banner) }}')"
+  {%
+  endif
+  %}
+>
+  <div class="banner-texto">
+    <p class="etiqueta">{{ perfil.titulo }}</p>
+    <h1>Hola, soy <span class="resaltado">{{ perfil.nombre }}</span></h1>
+    <a href="#proyectos" class="boton">Ver proyectos</a>
+  </div>
+</section>
+{% endblock %} {% block contenido %}
+<section class="acerca">
+  <div class="avatar">
+    {% if perfil.foto %}
+    <img
+      src="{{ url_for('static', filename='img/' ~ perfil.foto) }}"
+      alt="Foto de {{ perfil.nombre }}"
+    />
+    {% else %}
+    <span>{{ perfil.nombre[0] }}</span>
+    {% endif %}
+  </div>
+  <div class="acerca-texto">
+    <p class="etiqueta">Acerca de</p>
+    <h2>{{ perfil.nombre }}</h2>
+    <p class="descripcion">{{ perfil.descripcion }}</p>
+  </div>
+</section>
+
+<section id="experiencia">
+  <h2 class="titulo-seccion">Experiencia</h2>
+  <p class="vacio">Próximamente.</p>
+</section>
+
+<section id="educacion">
+  <h2 class="titulo-seccion">Educación</h2>
+  {% for e in estudios %}
+  <article class="tarjeta">
+    <h3>{{ e.carrera }}</h3>
+    <p>
+      {{ e.instituto }} · {{ e.fecha_inicio.year if e.fecha_inicio }} - {{
+      e.fecha_fin.year if e.fecha_fin else "En curso" }}
+    </p>
+  </article>
+  {% else %}
+  <p class="vacio">Todavía no hay estudios cargados.</p>
+  {% endfor %}
+</section>
+
+<section id="skills">
+  <h2 class="titulo-seccion">Hard &amp; Soft Skills</h2>
+  {% set tipos = {1: "Hard", 2: "Soft", 3: "Idioma"} %}
+  <div class="grilla-skills">
+    {% for h in habilidades %}
+    <div class="skill">
+      <div class="circulo" style="--p: {{ h.porcentaje }}">
+        <span>{{ h.porcentaje }}%</span>
+      </div>
+      <p class="skill-nombre">{{ h.nombre }}</p>
+      <p class="skill-tipo">{{ tipos[h.tipo_id] }}</p>
+    </div>
+    {% else %}
+    <p class="vacio">Todavía no hay skills cargadas.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="proyectos">
+  <h2 class="titulo-seccion">Proyectos</h2>
+  <div class="grilla-proyectos">
+    {% for p in proyectos %}
+    <article class="tarjeta">
+      <h3>{{ p.nombre }}</h3>
+      {% if p.fecha %}
+      <p class="fecha">{{ p.fecha.strftime("%m/%Y") }}</p>
+      {% endif %}
+      <p>{{ p.descripcion }}</p>
+      {% if p.link %}
+      <a class="boton" href="{{ p.link }}" target="_blank" rel="noopener"
+        >Ver link</a
+      >
+      {% endif %}
+    </article>
+    {% else %}
+    <p class="vacio">Todavía no hay proyectos cargados.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

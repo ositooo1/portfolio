@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block titulo %}{{ perfil.nombre }}{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/estilos.css') }}"
+    />
+  </head>
+  <body>
+    <header class="barra">
+      <span class="logo">&lt;/&gt; {{ perfil.nombre }}</span>
+      <nav class="menu">
+        {% for r in redes %}
+        <a class="red" href="{{ r.url }}" target="_blank" rel="noopener"
+          >{{ r.nombre }}</a
+        >
+        {% endfor %}
+        <a href="#login" class="boton">Login</a>
+      </nav>
+    </header>
+
+    {% block banner %}{% endblock %}
+
+    <main class="contenedor">{% block contenido %}{% endblock %}</main>
+  </body>
+</html>
