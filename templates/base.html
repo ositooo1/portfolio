@@ -21,6 +21,10 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='css/extras.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/edicion.css') }}"
+    />
   </head>
   <body>
     <header class="barra">
@@ -38,7 +42,7 @@
         >
           <i class="{{ r.icono }}"></i> <span>{{ r.nombre }}</span>
         </a>
-        {% endfor %} {% if session.get('usuario_id') %}
+        {% endfor %} {% if editando %}
         <a href="{{ url_for('logout') }}" class="boton">Logout</a>
         {% else %}
         <a href="{{ url_for('login') }}" class="boton">Login</a>
@@ -46,7 +50,13 @@
       </nav>
     </header>
 
-    {% block banner %}{% endblock %}
+    {% with mensajes = get_flashed_messages() %} {% if mensajes and editando %}
+    <div class="aviso">
+      {% for m in mensajes %}
+      <p>{{ m }}</p>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %} {% block banner %}{% endblock %}
 
     <main class="contenedor">{% block contenido %}{% endblock %}</main>
 
@@ -70,5 +80,9 @@
         {% endif %}
       </div>
     </footer>
+
+    {% if editando %}
+    <script src="{{ url_for('static', filename='js/edicion.js') }}"></script>
+    {% endif %}
   </body>
 </html>

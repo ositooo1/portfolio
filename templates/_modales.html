@@ -1,0 +1,43 @@
+{% from "_macros.html" import modal, campo with context %} {% call
+modal("perfil", "Perfil") %} {{ campo("nombre", "Nombre", requerido=True) }} {{
+campo("titulo", "Título (ej: Full Stack Developer Jr)") }} {{
+campo("descripcion", "Descripción", "textarea") }} {{ campo("email", "Email",
+"email") }} {{ campo("ubicacion", "Ciudad") }} {% endcall %} {% call
+modal("experiencia", "experiencia") %} {{ campo("empresa", "Empresa",
+requerido=True) }} {{ campo("puesto", "Puesto", requerido=True) }} {{
+campo("fecha_inicio", "Desde", "date") }} {{ campo("fecha_fin", "Hasta (vacío si
+es actual)", "date") }} {{ campo("descripcion", "Descripción", "textarea") }} {%
+endcall %} {% call modal("educacion", "estudio") %} {{ campo("instituto",
+"Instituto", requerido=True) }} {{ campo("carrera", "Carrera o título",
+requerido=True) }} {{ campo("fecha_inicio", "Desde", "date") }} {{
+campo("fecha_fin", "Hasta (vacío si está en curso)", "date") }} {% endcall %} {%
+call modal("habilidad", "skill") %} {{ campo("nombre", "Nombre", requerido=True)
+}} {{ campo("porcentaje", "Porcentaje (0 a 100)", "number", True) }}
+<div class="campo">
+  <label for="tipo_id">Tipo</label>
+  <select name="tipo_id">
+    <option value="1">Hard</option>
+    <option value="2">Soft</option>
+    <option value="3">Idioma</option>
+  </select>
+</div>
+{% endcall %} {% call modal("proyecto", "proyecto") %} {{ campo("nombre",
+"Nombre", requerido=True) }} {{ campo("fecha", "Fecha", "date") }} {{
+campo("descripcion", "Descripción", "textarea") }} {{ campo("link", "Link a la
+evidencia", "url") }} {% endcall %} {# Modal único para subir foto, banner o CV:
+el JS le pone la ruta y el título #}
+<dialog id="modal-subida" class="modal">
+  <form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <h3 class="modal-titulo">Subir archivo</h3>
+    <div class="campo">
+      <label for="archivo">Archivo</label>
+      <input type="file" name="archivo" id="archivo" required />
+      <p class="ayuda"></p>
+    </div>
+    <div class="modal-botones">
+      <button type="button" class="boton" data-cerrar>Cancelar</button>
+      <button type="submit" class="boton relleno">Subir</button>
+    </div>
+  </form>
+</dialog>

@@ -1,0 +1,37 @@
+{# Botón de eliminar: un formulario POST con token CSRF y confirmación #}
+{% macro borrar(seccion, id) %}
+    <form method="post" action="{{ url_for('eliminar', seccion=seccion, id=id) }}"
+          class="form-inline" onsubmit="return confirm('¿Eliminar este elemento?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="icono-btn peligro" title="Eliminar"><i class="fa-solid fa-xmark"></i></button>
+    </form>
+{% endmacro %}
+
+{# Ventana modal con un formulario; los campos se pasan con {% call %} #}
+{% macro modal(seccion, nombre) %}
+    <dialog id="modal-{{ seccion }}" class="modal" data-nombre="{{ nombre }}">
+        <form method="post" action="{{ url_for('guardar', seccion=seccion) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="id">
+            <h3 class="modal-titulo">{{ nombre }}</h3>
+            {{ caller() }}
+            <div class="modal-botones">
+                <button type="button" class="boton" data-cerrar>Cancelar</button>
+                <button type="submit" class="boton relleno">Guardar</button>
+            </div>
+        </form>
+    </dialog>
+{% endmacro %}
+
+{# Un campo de formulario con su etiqueta #}
+{% macro campo(nombre, etiqueta, tipo="text", requerido=False) %}
+    <div class="campo">
+        <label for="{{ nombre }}">{{ etiqueta }}</label>
+        {% if tipo == "textarea" %}
+            <textarea name="{{ nombre }}" rows="4" {{ "required" if requerido }}></textarea>
+        {% else %}
+            <input type="{{ tipo }}" name="{{ nombre }}" {{ "required" if requerido }}
+                   {% if tipo == "number" %}min="0" max="100"{% endif %}>
+        {% endif %}
+    </div>
+{% endmacro %}

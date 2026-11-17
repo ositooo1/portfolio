@@ -1,8 +1,7 @@
 from getpass import getpass
 
-from werkzeug.security import generate_password_hash
-
-from app import app, db, Usuario
+from app import app, db
+from modelos import Usuario
 
 with app.app_context():
     if Usuario.query.count() > 0:
@@ -19,8 +18,8 @@ with app.app_context():
         elif clave != repetir:
             print("Las contraseñas no coinciden.")
         else:
-            db.session.add(
-                Usuario(username=username, password_hash=generate_password_hash(clave))
-            )
+            usuario = Usuario(username=username)
+            usuario.establecer_clave(clave)
+            db.session.add(usuario)
             db.session.commit()
             print("Usuario creado.")

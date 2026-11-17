@@ -1,4 +1,5 @@
-{% extends "base.html" %} {% block banner %}
+{% extends "base.html" %} {% from "_macros.html" import borrar with context %}
+{% block banner %}
 <section
   class="banner"
   {%
@@ -9,6 +10,18 @@
   endif
   %}
 >
+  {% if editando %}
+  <button
+    class="boton-banner"
+    title="Cambiar banner"
+    data-subir="{{ url_for('subir', tipo='banner') }}"
+    data-titulo="Cambiar banner"
+    data-accept=".jpg,.jpeg,.png,.webp"
+    data-ayuda="JPG, PNG o WebP, hasta 5 MB. Ideal: unos 1600 px de ancho."
+  >
+    <i class="fa-solid fa-camera"></i> Cambiar banner
+  </button>
+  {% endif %}
   <div class="banner-texto">
     <p class="etiqueta">{{ perfil.titulo }}</p>
     <h1>Hola, soy <span class="resaltado">{{ perfil.nombre }}</span></h1>
@@ -16,34 +29,154 @@
   </div>
 </section>
 {% endblock %} {% block contenido %}
-<section class="acerca">
-  <div class="avatar">
-    {% if perfil.foto %}
-    <img
-      src="{{ url_for('static', filename='img/' ~ perfil.foto) }}"
-      alt="Foto de {{ perfil.nombre }}"
-    />
-    {% else %}
-    <span>{{ perfil.nombre[0] }}</span>
+<section class="acerca" id="acerca">
+  <div class="avatar-wrap">
+    <div class="avatar">
+      {% if perfil.foto %}
+      <img
+        src="{{ url_for('static', filename='img/' ~ perfil.foto) }}"
+        alt="Foto de {{ perfil.nombre }}"
+      />
+      {% else %}
+      <span>{{ perfil.nombre[0] }}</span>
+      {% endif %}
+    </div>
+    {% if editando %}
+    <button
+      type="button"
+      class="icono-btn avatar-editar"
+      title="Cambiar foto"
+      data-subir="{{ url_for('subir', tipo='foto') }}"
+      data-titulo="Cambiar foto"
+      data-accept=".jpg,.jpeg,.png,.webp"
+      data-ayuda="JPG, PNG o WebP, hasta 3 MB. Ideal: cuadrada, unos 400 px."
+    >
+      <i class="fa-solid fa-camera"></i>
+    </button>
     {% endif %}
   </div>
+
   <div class="acerca-texto">
     <p class="etiqueta">{{ perfil.titulo }}</p>
-    <h2>Acerca de mí</h2>
+    <div class="titulo-fila">
+      <h2>Acerca de mí</h2>
+      {% if editando %}
+      <button
+        type="button"
+        class="icono-btn"
+        title="Editar perfil"
+        data-abrir="perfil"
+        data-nombre="{{ perfil.nombre }}"
+        data-titulo="{{ perfil.titulo or '' }}"
+        data-descripcion="{{ perfil.descripcion or '' }}"
+        data-email="{{ perfil.email or '' }}"
+        data-ubicacion="{{ perfil.ubicacion or '' }}"
+      >
+        <i class="fa-solid fa-pen"></i>
+      </button>
+      {% endif %}
+    </div>
     <p class="descripcion">{{ perfil.descripcion }}</p>
+
+    <div class="fila-botones">
+      {% if perfil.cv %}
+      <a class="boton" href="{{ url_for('descargar_cv') }}">
+        <i class="fa-solid fa-download"></i> Descargar CV
+      </a>
+      {% endif %} {% if editando %}
+      <button
+        type="button"
+        class="boton"
+        title="Subir CV"
+        data-subir="{{ url_for('subir', tipo='cv') }}"
+        data-titulo="{{ 'Reemplazar CV' if perfil.cv else 'Subir CV' }}"
+        data-accept=".pdf"
+        data-ayuda="Solo PDF, hasta 5 MB."
+      >
+        <i class="fa-solid fa-file-arrow-up"></i> {{ "Reemplazar CV" if
+        perfil.cv else "Subir CV" }}
+      </button>
+      {% endif %}
+    </div>
   </div>
 </section>
 
 <section id="experiencia">
-  <h2 class="titulo-seccion">Experiencia</h2>
+  <div class="seccion-cabeza">
+    <h2 class="titulo-seccion">Experiencia</h2>
+    {% if editando %}
+    <button class="boton" data-abrir="experiencia">
+      <i class="fa-solid fa-plus"></i> Agregar
+    </button>
+    {% endif %}
+  </div>
+  {% for x in experiencias %}
+  <article class="tarjeta">
+    <div class="tarjeta-cabeza">
+      <h3>{{ x.puesto }}</h3>
+      {% if editando %}
+      <div class="acciones">
+        <button
+          class="icono-btn"
+          title="Editar"
+          data-abrir="experiencia"
+          data-id="{{ x.id }}"
+          data-empresa="{{ x.empresa }}"
+          data-puesto="{{ x.puesto }}"
+          data-fecha_inicio="{{ x.fecha_inicio.isoformat() if x.fecha_inicio else '' }}"
+          data-fecha_fin="{{ x.fecha_fin.isoformat() if x.fecha_fin else '' }}"
+          data-descripcion="{{ x.descripcion or '' }}"
+        >
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        {{ borrar("experiencia", x.id) }}
+      </div>
+      {% endif %}
+    </div>
+    <p>
+      {{ x.empresa }} · {{ x.fecha_inicio.year if x.fecha_inicio }} - {{
+      x.fecha_fin.year if x.fecha_fin else "Actual" }}
+    </p>
+    {% if x.descripcion %}
+    <p>{{ x.descripcion }}</p>
+    {% endif %}
+  </article>
+  {% else %}
   <p class="vacio">Próximamente.</p>
+  {% endfor %}
 </section>
 
 <section id="educacion">
-  <h2 class="titulo-seccion">Educación</h2>
+  <div class="seccion-cabeza">
+    <h2 class="titulo-seccion">Educación</h2>
+    {% if editando %}
+    <button class="boton" data-abrir="educacion">
+      <i class="fa-solid fa-plus"></i> Agregar
+    </button>
+    {% endif %}
+  </div>
   {% for e in estudios %}
   <article class="tarjeta">
-    <h3>{{ e.carrera }}</h3>
+    <div class="tarjeta-cabeza">
+      <h3>{{ e.carrera }}</h3>
+      {% if editando %}
+      <div class="acciones">
+        <button
+          class="icono-btn"
+          title="Editar"
+          data-abrir="educacion"
+          data-id="{{ e.id }}"
+          data-instituto="{{ e.instituto }}"
+          data-carrera="{{ e.carrera }}"
+          data-fecha_inicio="{{ e.fecha_inicio.isoformat() if e.fecha_inicio else '' }}"
+          data-fecha_fin="{{ e.fecha_fin.isoformat() if e.fecha_fin else '' }}"
+        >
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        {{ borrar("educacion", e.id) }}
+      </div>
+      {% endif %}
+    </div>
     <p>
       {{ e.instituto }} · {{ e.fecha_inicio.year if e.fecha_inicio }} - {{
       e.fecha_fin.year if e.fecha_fin else "En curso" }}
@@ -55,7 +188,14 @@
 </section>
 
 <section id="skills">
-  <h2 class="titulo-seccion">Hard &amp; Soft Skills</h2>
+  <div class="seccion-cabeza">
+    <h2 class="titulo-seccion">Hard &amp; Soft Skills</h2>
+    {% if editando %}
+    <button class="boton" data-abrir="habilidad">
+      <i class="fa-solid fa-plus"></i> Agregar
+    </button>
+    {% endif %}
+  </div>
   {% set tipos = {1: "Hard", 2: "Soft", 3: "Idioma"} %}
   <div class="grilla-skills">
     {% for h in habilidades %}
@@ -65,6 +205,22 @@
       </div>
       <p class="skill-nombre">{{ h.nombre }}</p>
       <p class="skill-tipo">{{ tipos[h.tipo_id] }}</p>
+      {% if editando %}
+      <div class="acciones acciones-skill">
+        <button
+          class="icono-btn"
+          title="Editar"
+          data-abrir="habilidad"
+          data-id="{{ h.id }}"
+          data-nombre="{{ h.nombre }}"
+          data-porcentaje="{{ h.porcentaje }}"
+          data-tipo_id="{{ h.tipo_id }}"
+        >
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        {{ borrar("habilidad", h.id) }}
+      </div>
+      {% endif %}
     </div>
     {% else %}
     <p class="vacio">Todavía no hay skills cargadas.</p>
@@ -73,11 +229,37 @@
 </section>
 
 <section id="proyectos">
-  <h2 class="titulo-seccion">Proyectos</h2>
+  <div class="seccion-cabeza">
+    <h2 class="titulo-seccion">Proyectos</h2>
+    {% if editando %}
+    <button class="boton" data-abrir="proyecto">
+      <i class="fa-solid fa-plus"></i> Agregar
+    </button>
+    {% endif %}
+  </div>
   <div class="grilla-proyectos">
     {% for p in proyectos %}
     <article class="tarjeta">
-      <h3>{{ p.nombre }}</h3>
+      <div class="tarjeta-cabeza">
+        <h3>{{ p.nombre }}</h3>
+        {% if editando %}
+        <div class="acciones">
+          <button
+            class="icono-btn"
+            title="Editar"
+            data-abrir="proyecto"
+            data-id="{{ p.id }}"
+            data-nombre="{{ p.nombre }}"
+            data-fecha="{{ p.fecha.isoformat() if p.fecha else '' }}"
+            data-descripcion="{{ p.descripcion or '' }}"
+            data-link="{{ p.link or '' }}"
+          >
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          {{ borrar("proyecto", p.id) }}
+        </div>
+        {% endif %}
+      </div>
       {% if p.fecha %}
       <p class="fecha">{{ p.fecha.strftime("%m/%Y") }}</p>
       {% endif %}
@@ -93,4 +275,5 @@
     {% endfor %}
   </div>
 </section>
-{% endblock %}
+
+{% if editando %} {% include "_modales.html" %} {% endif %} {% endblock %}

@@ -1,0 +1,241 @@
+/* ---------- Botones de edición ---------- */
+.icono-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background-color: var(--acento);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    background-color 0.2s;
+}
+
+.icono-btn:hover {
+  transform: scale(1.12);
+}
+
+.icono-btn.peligro {
+  background-color: #3a2a2a;
+}
+
+.icono-btn.peligro:hover {
+  background-color: #7a2b2b;
+}
+
+.form-inline {
+  display: inline;
+  margin: 0;
+}
+
+/* Los botones van en el flujo de la página, nunca encima del texto */
+.acciones {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.acciones-skill {
+  justify-content: center;
+  margin-top: 0.7rem;
+}
+
+.tarjeta {
+  position: relative;
+}
+
+.tarjeta-cabeza {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+/* Título de sección con el botón "Agregar" a la derecha */
+.seccion-cabeza {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin: 3.5rem 0 1.5rem;
+}
+
+.seccion-cabeza .titulo-seccion {
+  margin: 0;
+}
+
+/* Título "Acerca de mí" con el lápiz al lado */
+.titulo-fila {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.fila-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+button.boton {
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+button.boton.relleno {
+  background-color: var(--acento);
+}
+
+/* ---------- Banner y foto ---------- */
+.banner {
+  position: relative;
+}
+
+.boton-banner {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  z-index: 3;
+  padding: 0.5rem 1rem;
+  background-color: rgba(10, 10, 10, 0.75);
+  border: 1px solid var(--acento);
+  color: var(--texto);
+  font-family: inherit;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.boton-banner:hover {
+  background-color: var(--acento);
+}
+
+/* La sección de perfil queda por encima del banner (se superponen) */
+.acerca {
+  position: relative;
+  z-index: 2;
+}
+
+.avatar-wrap {
+  position: relative;
+  width: fit-content;
+}
+
+.avatar-editar {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 42px;
+  height: 42px;
+  border: 3px solid var(--fondo);
+}
+
+/* ---------- Aviso de cambios ---------- */
+.aviso {
+  max-width: 1100px;
+  margin: 1rem auto 0;
+  padding: 0 1.5rem;
+}
+
+.aviso p {
+  margin: 0;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--acento);
+  background-color: var(--superficie);
+  font-size: 0.9rem;
+}
+
+/* ---------- Modal ---------- */
+.modal {
+  width: min(500px, 92vw);
+  padding: 1.5rem 2rem;
+  background-color: var(--superficie);
+  border: 1px solid var(--borde);
+  border-top: 3px solid var(--acento);
+  color: var(--texto);
+}
+
+.modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.modal[open] {
+  animation: aparecer 0.25s ease-out;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.modal-titulo {
+  margin: 0 0 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 1rem;
+}
+
+.modal textarea,
+.modal select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background-color: var(--fondo);
+  border: 1px solid var(--borde);
+  color: var(--texto);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.modal textarea:focus,
+.modal select:focus {
+  outline: none;
+  border-color: var(--acento);
+}
+
+.ayuda {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+
+.modal-botones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 600px) {
+  .icono-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .boton-banner {
+    top: 0.7rem;
+    right: 1rem;
+    padding: 0.4rem 0.7rem;
+  }
+
+  .seccion-cabeza {
+    flex-wrap: wrap;
+  }
+
+  .titulo-fila,
+  .fila-botones {
+    justify-content: center;
+  }
+}
