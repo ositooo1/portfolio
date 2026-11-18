@@ -36,6 +36,13 @@ CARPETA_DOCS = os.path.join(BASE_DIR, "static", "docs")
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = config.URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# El plan gratis de Clever Cloud admite pocas conexiones a la vez.
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_size": 2,
+    "max_overflow": 1,
+    "pool_pre_ping": True,
+    "pool_recycle": 280,
+}
 app.config["SECRET_KEY"] = config.SECRET_KEY
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
@@ -151,6 +158,8 @@ def guardar(seccion):
         abort(404)
 
     try:
+        # Polimorfismo: esta ruta sirve para todas las secciones. Llama al mismo
+        # método guardar() y cada gestor se comporta según su sección.
         gestor.guardar(request.form)
         flash("Cambios guardados.")
     except ErrorDeValidacion as error:

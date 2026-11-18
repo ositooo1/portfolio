@@ -9,8 +9,12 @@ from modelos import Perfil
 MB = 1024 * 1024
 
 
+# Abstracción: define el proceso de subir un archivo (validar y reemplazar).
+# Cada tipo de subida indica su campo, sus formatos y su tamaño máximo.
 class Subida(ABC):
     def __init__(self, carpeta):
+        # Encapsulamiento: la carpeta y la detección de formato son privadas.
+        # Solo se usan desde dentro de la clase.
         self.__carpeta = carpeta
 
     @property
@@ -84,6 +88,8 @@ class SubidaImagen(Subida):
         return {"jpg", "png", "webp"}
 
 
+# Herencia: SubidaFoto hereda de SubidaImagen, que a su vez hereda de Subida.
+# Toma los formatos de imagen y solo define su campo y su tamaño máximo.
 class SubidaFoto(SubidaImagen):
     def campo(self):
         return "foto"

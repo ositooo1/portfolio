@@ -6,14 +6,20 @@ from errores import ErrorDeValidacion
 from modelos import Perfil, Experiencia, Educacion, Habilidad, Proyecto
 
 
+# Abstracción: esta clase abstracta define qué puede hacer cualquier sección
+# (guardar, eliminar, validar) sin decir de cuál se trata. No se instancia.
 class GestorSeccion(ABC):
     def __init__(self):
+        # Encapsulamiento: __campos es privado. Desde afuera solo se lee con la
+        # propiedad "campos", y no se puede pisar por accidente.
         self.__campos = self.definir_campos()
 
     @property
     def campos(self):
         return self.__campos
 
+    # Abstracción: cada sección hija está obligada a definir estos métodos.
+    # La clase padre no sabe qué tabla ni qué campos usa cada una.
     @abstractmethod
     def modelo(self): ...
 
@@ -23,6 +29,8 @@ class GestorSeccion(ABC):
     @abstractmethod
     def ancla(self): ...
 
+    # Encapsulamiento: método privado. Solo lo usa la propia clase para pasar
+    # los textos del formulario a texto, fecha o entero.
     def __convertir(self, tipo, valor):
         valor = (valor or "").strip()
         try:
@@ -83,6 +91,8 @@ class GestorPerfil(GestorSeccion):
             "ubicacion": ("texto", False),
         }
 
+    # Polimorfismo: el perfil es único. obtener() devuelve siempre el mismo
+    # registro, y eliminar() lo bloquea, a diferencia del comportamiento del padre.
     def obtener(self, id_elemento):
         return Perfil.query.first()
 
@@ -90,6 +100,8 @@ class GestorPerfil(GestorSeccion):
         raise ErrorDeValidacion("El perfil no se puede eliminar.")
 
 
+# Herencia: reutiliza leer, guardar y eliminar de GestorSeccion.
+# Solo define lo propio: su modelo, sus campos y su ancla.
 class GestorExperiencia(GestorSeccion):
     def modelo(self):
         return Experiencia
@@ -137,6 +149,8 @@ class GestorHabilidad(GestorSeccion):
             "tipo_id": ("entero", True),
         }
 
+    # Polimorfismo: sobrescribe validar() del padre, que no hacía nada.
+    # Acá controla el rango del porcentaje y el tipo de skill.
     def validar(self, datos):
         super().validar(datos)
         if not 0 <= datos["porcentaje"] <= 100:

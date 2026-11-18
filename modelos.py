@@ -13,6 +13,8 @@ class Usuario(db.Model):
     def establecer_clave(self, clave):
         self.password_hash = generate_password_hash(clave)
 
+    # Encapsulamiento: la comparación contra el hash queda dentro de Usuario.
+    # El resto del programa nunca maneja el hash directamente.
     def verificar_clave(self, clave):
         return check_password_hash(self.password_hash, clave)
 
